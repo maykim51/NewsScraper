@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>나홀로 링크 메모장</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link href="https://fonts.googleapis.com/css?family=Stylish&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mystyle.css') }}">
+
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.0.min.js"></script>
+    <script>
+      function open_post_box() {
+        if ($('#post-box').css('display') == 'block') {
+          $('#post-box').hide();
+          $('#btn-post-box').text('포스팅 박스 열기');
+          $('#post-cards').show();
+        } else {
+          $('#post-box').show();
+          $('#btn-post-box').text('포스팅 박스 닫기');
+          $('#post-cards').hide();
+        }
+      }
+      function posting() {
+        // 읽기
+        let url = $('#posting-url').val();
+        let comment = $('#posting-comment').val();
+
+        // 우리가 크롬 콘솔창에서 썼던 그 코드!
+        $.ajax({
+          type: "POST", // POST 방식으로 요청하겠다.
+          url: "/post", // /post라는 url에 요청하겠다.
+          data: { url_give: url, comment_give: comment}, // 데이터를 주는 방법
+          success: function(response){ // 성공하면
+            if (response['result'] == 'success') {
+              alert('포스팅 성공!');
+              window.location.reload();
+            } else {
+              alert('서버 오류!')
+            }
+          }
+        })
+      }
+
+      function get_posting() {
+        $('#cards-box').empty('');
+        $.ajax({
+          type: "GET",
+          url: "/post",
+          data: {},
+          success: function(response){
+            let cards = response['articles'];
+            console.log(cards);
+            for (let i = 0 ; i < cards.length; i++) {
+              let url = cards[i]['url'];
+              let comment = cards[i]['comment'];
+              let title = cards[i]['title'];
+              let image = cards[i]['image'];
+              let desc = cards[i]['desc'];
+
+              make_card(url,comment,title,image,desc);
+            }
+          }
+        })
+      }
+      function make_card(url,comment,title,image,description) {
+        $('#post-cards').append('<div class="card">\
+            <img class="card-img-top" src="'+image+'" alt="Card image cap">\
+            <div class="card-body">\
+              <a class="card-title" href="'+url+'" target="_blank">'+title+'</a>\
+              <p class="card-text">'+description+'</p>\
+              <p class="card-text comment">'+comment+'</p>\
+            </div>\
+          </div>');
+      }
+      $( document ).ready(function() {
+          $('#post-cards').html('');
+          get_posting();
+      });  
+    </script>
+</head>
+<body>
+    <div class="jumbotron feed-frame">
+      <h1 class="display-4">나홀로 링크 메모장</h1>
+      <p class="lead">글을 읽고 난 뒤 들었던 내 생각들. 단상. 나는 무엇을 읽고, 무엇을 생각했는가?</p>
+      <hr class="my-4">
+      <p class="lead">
+        <button type="button" class="btn btn-primary" onclick="open_post_box()" id="btn-post-box">포스팅 박스 열기</button>
+      </p>
+    </div>
+    <div class="form-post" id="post-box">
+      <form>
+        <div class="form-group">
+          <label for="exampleFormControlInput1">아티클 URL</label>
+          <input class="form-control" id="posting-url" placeholder="">
+        </div>
+        <div class="form-group">
+          <label for="exampleFormControlTextarea1">간단 코멘트</label>
+          <textarea class="form-control" id="posting-comment" rows="2"></textarea>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="posting()">기사저장</button>
+      </form>
+    </div>
+    <div class="card-columns card-post" id="post-cards">
+      <div class="card">
+        <img class="card-img-top" src="https://www.fodors.com/wp-content/uploads/2018/10/4_UltimateRome_PiazzaNavona-975x650.jpg" alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">예를 들면 이렇게 카드가 나옵니다!!</h5>
+          <p class="card-text">여기에 기사 내용이 들어가겠죠</p>
+          <p class="card-text comment">여기엔 코멘트가 들어갑니다</p>
+        </div>
+      </div>
+      <div class="card">
+        <img class="card-img-top" src="https://www.fodors.com/wp-content/uploads/2018/10/4_UltimateRome_PiazzaNavona-975x650.jpg" alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">긴 글 예시</h5>
+          <p class="card-text">여기에 기사 내용이 들어가겠죠 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리 나라만세 무궁화 삼천리 화려강산 대한사람 대한으로 길이 보전하세 여기에 기사 내용이 들어가겠죠 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리 나라만세 무궁화 삼천리 화려강산 대한사람 대한으로 길이 보전하세</p>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

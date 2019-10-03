@@ -1,0 +1,29 @@
+* {
+	font-family: 'Stylish', sans-serif;
+}
+
+body {
+	max-width: 900px;
+	margin: auto;
+}
+
+.feed-frame {
+    margin: 1rem auto;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+}
+
+.form-post {
+	max-width: 500px;
+	padding: 2rem;
+	margin: 2rem auto;
+	border-color: #e9ecef;
+	border-radius: 0.3rem;
+	border: solid;
+	display: none;
+}
+
+.comment {
+	color: blue;
+	font-weight: bold;
+}
